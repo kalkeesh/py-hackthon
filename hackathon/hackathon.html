@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HACKATHON SCORE</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('img/bg.png');
+            background-size: 100%;
+            background-repeat: no-repeat; 
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 30px;
+            font-size: 32px;
+            text-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+        }
+
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 80%;
+            background-color: rgba(255, 255, 255, 0.8); /* Transparent white background */
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 2px solid #cccccc;
+        }
+
+        th, td {
+            border: 2px solid #cccccc; /* Add border to each cell */
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #ec923e;
+            color: #ffffff;
+            font-weight: bold;
+            border-radius: 8px 8px 0 0;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <h2>.</h2>
+    <table id="excel-table">
+        <thead>
+            <tr>
+                <th>Position</th>
+                <th>User ID</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+          
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchAndUpdateData() {
+            try {
+                const response = await fetch("http://127.0.0.1:8000/hackathon-data");
+                const data = await response.json();
+                updateTable(data);
+            } catch (error) {
+                console.error("Error fetching the Excel data:", error);
+            }
+        }
+    
+        function updateTable(data) {
+            const table = document.getElementById("excel-table");
+    
+            // Clear existing rows
+            table.getElementsByTagName('tbody')[0].innerHTML = '';
+    
+            // Add table rows
+            data.forEach((record, index) => {
+                const row = table.getElementsByTagName('tbody')[0].insertRow();
+                const indexCell = row.insertCell(0);
+                const position = index + 1;
+                indexCell.textContent = position; // Add position number
+                Object.values(record).forEach((value, columnIndex) => {
+                    if (columnIndex !== 2) { // Skip timestamp column
+                        const cell = row.insertCell();
+                        cell.textContent = value;
+                    }
+                });
+            });
+        }
+    
+        // Initial fetch and update
+        fetchAndUpdateData();
+    
+        // Refresh data every 10 seconds
+        setInterval(fetchAndUpdateData, 10000);
+    </script>
+</body>
+</html>
